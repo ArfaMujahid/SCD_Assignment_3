@@ -12,25 +12,16 @@ import javax.swing.table.TableColumn;
 import java.io.FileWriter;
 import java.io.IOException;
 
+@SuppressWarnings("unused")
+
 class ButtonRenderer extends DefaultTableCellRenderer {
     private JButton button;
 
     public ButtonRenderer(JButton b) {
         button = b;
         button.setText("Read");
-
-        button.setBackground(Color.GREEN); // Set the background color to green
-        button.setForeground(Color.RED); // Set the text color to red
-
-        // Add an ActionListener to the button to handle button clicks
-        // button.addActionListener(new ActionListener() {
-        // @Override
-        // public void actionPerformed(ActionEvent e) {
-        // // Handle button click action here
-        // System.out.println("Button clicked!");
-        // // You can perform any custom action here
-        // }
-        // });
+        button.setBackground(Color.GREEN);
+        button.setForeground(Color.RED);
     }
 
     @Override
@@ -38,21 +29,16 @@ class ButtonRenderer extends DefaultTableCellRenderer {
             int row, int column) {
         if (isSelected) {
             button.setBackground(Color.DARK_GRAY);
-            button.setForeground(Color.RED);
-            // button.setVisible(false);
+            button.setForeground(Color.blue);
         } else {
             button.setBackground(table.getBackground());
             button.setForeground(table.getForeground());
-            // button.setVisible(true);
-            // System.out.println("Button clicked!"+ button.getText()); ;
         }
 
         TableColumn tableColumn = table.getColumnModel().getColumn(column);
         int columnWidth = tableColumn.getPreferredWidth();
         int lastColumn = table.getColumnCount();
         button.setPreferredSize(new Dimension(columnWidth, button.getPreferredSize().height));
-        // fireEditingStopped() ;
-        // System.out.println("Button clicked!"+ lastColumn); ;
         return button;
     }
 }
@@ -68,6 +54,10 @@ public class Q1 extends JFrame {
     }
 
     public Q1() {
+        this.displayFrame();
+    }
+
+    public void displayFrame() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         contentFrame = new JFrame("Library Management System");
 
@@ -150,9 +140,6 @@ public class Q1 extends JFrame {
         tableModel.addColumn("Cost");
         tableModel.addColumn("Read");
 
-        // DefaultTableModel tableModel = new DefaultTableModel();
-        // JTable table = new JTable(tableModel);
-
         JTable availableItemsTable = new JTable(tableModel);
         availableItemsTable.getTableHeader().setReorderingAllowed(false);
         tablePanel.add(new JScrollPane(availableItemsTable), BorderLayout.CENTER);
@@ -188,11 +175,7 @@ public class Q1 extends JFrame {
                 int column = availableItemsTable.columnAtPoint(e.getPoint());
 
                 if (row >= 0 && column >= 0) {
-                    // The mouse click occurred within a valid cell
-                    // Now you can work with the 'row' and 'column' values
                     System.out.println("Clicked on Row: " + row + ", Column: " + column);
-                    // Define the action to be performed when the button is clicked
-                    // This code will be executed when the button is clicked
                     System.out.println("Button clicked!");
 
                     int selectedRow = availableItemsTable.getSelectedRow();
@@ -230,63 +213,13 @@ public class Q1 extends JFrame {
         });
 
         availableItemsTable.getDefaultRenderer(JButton.class);
-        // ButtonEditor buttonEditor = new ButtonEditor();
-        // TableColumn buttonColumn = availableItemsTable.getColumnModel().getColumn(7);
-        // buttonColumn.setCellEditor(buttonEditor);
-        // buttonColumn.setCellRenderer(new DefaultTableCellRenderer());
-
-        // SwingUtilities.invokeLater(new Runnable() {
-        // @Override
-        // public void run() {
-        // // Add ActionListener to the button here
-        // button.addActionListener(customActionListener);
-        // }
-        // });
 
         ActionListener customActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Define the action to be performed when the button is clicked
-                // This code will be executed when the button is clicked
                 System.out.println("Button clicked!");
-
-                // int selectedRow = availableItemsTable.getSelectedRow();
-                // if (selectedRow != -1) {
-                // Item selectedItem = itemList.get(selectedRow);
-                // if (selectedItem != null) {
-                // JFrame contentFrame = new JFrame("Content");
-                // contentFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-                // JTextArea contentTextArea = new JTextArea(selectedItem.getContent());
-                // contentTextArea.setWrapStyleWord(true);
-                // contentTextArea.setLineWrap(true);
-                // contentTextArea.setEditable(false);
-
-                // contentFrame.add(new JScrollPane(contentTextArea));
-                // contentFrame.setSize(400, 300);
-                // contentFrame.setVisible(true);
-                // contentFrame.addWindowListener(new WindowAdapter() {
-
-                // @Override
-                // public void windowClosing(WindowEvent e) {
-                // int result = JOptionPane.showConfirmDialog(contentFrame,
-                // "Are you sure you want to close this window?", "Confirm Close",
-                // JOptionPane.YES_NO_OPTION);
-                // if (result == JOptionPane.YES_OPTION) {
-                // contentFrame.dispose();
-                // }
-                // }
-                // });
-                // }
-                // }
-                // }
             }
         };
-        // buttonEditor.setActionListener(customActionListener);
-
-        // displaying all
-
-        // Add an ActionListener to the button if needed
 
         int count = 0;
 
@@ -297,10 +230,6 @@ public class Q1 extends JFrame {
 
                 JButton button = new JButton(String.valueOf(count));
                 button.addActionListener(customActionListener);
-
-                // button.addActionListener(customActionListener);
-
-                // Create a new row with the button in the last column
                 Object[] row = new Object[] {
                         book.getID(),
                         book.getTitle(),
@@ -311,16 +240,11 @@ public class Q1 extends JFrame {
                         book.getCost(),
                         button
                 };
-                // button.addActionListener(customActionListener);
                 ButtonRenderer buttonRenderer = new ButtonRenderer(button);
-                // button.addActionListener(customActionListener);
-                int lastColumn = availableItemsTable.getColumnCount() - 1; // Assuming the buttons are in the last
-                                                                           // column
+                int lastColumn = availableItemsTable.getColumnCount() - 1;
                 TableColumn column = availableItemsTable.getColumnModel().getColumn(lastColumn);
                 column.setCellRenderer(buttonRenderer);
                 button.addActionListener(customActionListener);
-
-                // Add the row to the table model
                 tableModel.addRow(row);
 
             } else if (item instanceof Magazine) {
@@ -333,7 +257,6 @@ public class Q1 extends JFrame {
                         "-",
                         magazine.getPopularityCount(),
                         magazine.getCost(),
-                        // button
                 });
 
             } else if (item instanceof NewsPaper) {
@@ -346,7 +269,6 @@ public class Q1 extends JFrame {
                         newspaper.getDate(),
                         newspaper.getPopularityCount(),
                         newspaper.getCost(),
-                        // button
                 });
             }
         }
@@ -420,14 +342,6 @@ abstract class Item implements Configuration {
         return this.id;
     }
 
-    // protected void setBorrowed(boolean value) {
-    // borrowed = value;
-    // }
-
-    // protected boolean getBorrowed() {
-    // return borrowed;
-    // }
-
     public void setPopularityCount(int pop) {
         popularityCount = pop;
     }
@@ -500,11 +414,6 @@ class Library {
     public boolean loadFile() {
         try {
             filedata = new File("data.txt");
-            // try {
-            // System.out.println("DATE " + filedata.getCanonicalPath());
-            // } catch (IOException e) {
-            // e.printStackTrace();
-            // }
             if (!filedata.exists()) {
                 System.out.print("FILE NOT FOUND");
                 return false;
@@ -923,11 +832,7 @@ class AddItemGUI extends JFrame {
         setSize(400, 500);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
-
-        // Create an input panel for text fields
         inputPanel = new JPanel(new GridLayout(10, 2));
-
-        // Add a combo box for selecting item type
         inputPanel.add(new JLabel("Select Item Type:"));
         String[] itemTypes = { "Book", "Magazine", "Newspaper" };
         itemTypeComboBox = new JComboBox<>(itemTypes);
@@ -965,8 +870,8 @@ class AddItemGUI extends JFrame {
         costField = new JTextField();
         inputPanel.add(costField);
 
-        inputPanel.add(new JLabel("Content:")); // Label for content
-        contentArea = new JTextArea(); // Text area for content
+        inputPanel.add(new JLabel("Content:"));
+        contentArea = new JTextArea();
         JScrollPane scrollPane = new JScrollPane(contentArea);
         inputPanel.add(scrollPane);
 
@@ -1042,8 +947,6 @@ class AddItemGUI extends JFrame {
 
                 library.save();
                 dispose();
-                // mainFrame.refreshTable(mainFrame.getTablePanel(),
-                // mainFrame.getMainHeadingPanel());
             }
         });
     }
@@ -1122,8 +1025,6 @@ class DeleteItemGUI extends JFrame {
                 library.deleteItem(ID);
                 library.save();
                 dispose();
-                // mainFrame.refreshTable(mainFrame.getTablePanel(),
-                // mainFrame.getMainHeadingPanel());
             }
 
         });
