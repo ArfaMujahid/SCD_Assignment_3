@@ -1,3 +1,3 @@
 2, magazine_title, author1_name, author2_name, author3_name., publisher_company, 10, 500 : Hello this is the content of the magazine
 3, newspaper_title, publisher_company, 1, 20-09-2023 : Hello this is the content of the newspaper
-1, BOOK TEST, AUTOR, 2019, 3, 3 : Hello this is the content of the book
+1, book_title, author1_name, 2019, 3, 3 : Hello this is the content of the book
