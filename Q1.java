@@ -9,8 +9,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import javax.swing.table.TableColumn;
-import java.io.FileWriter;
-import java.io.IOException;
 
 @SuppressWarnings("unused")
 
@@ -20,8 +18,6 @@ class ButtonRenderer extends DefaultTableCellRenderer {
     public ButtonRenderer(JButton b) {
         button = b;
         button.setText("Read");
-        button.setBackground(Color.GREEN);
-        button.setForeground(Color.RED);
     }
 
     @Override
@@ -48,68 +44,83 @@ public class Q1 extends JFrame {
     private Library library;
     private JPanel mainHeadingPanel;
     private JPanel tablePanel;
+    JTable availableItemsTable;
+    JScrollPane pane;
+    static Q1 Q = new Q1();
+    boolean check = false;
 
-    public static void main(String[] args) {
-        new Q1();
+    public static Q1 GetInstance() {
+        return Q;
     }
 
-    public Q1() {
+    public static void main(String[] args) {
+
+    }
+
+    private Q1() {
         this.displayFrame();
     }
 
     public void displayFrame() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        contentFrame = new JFrame("Library Management System");
+        if (contentFrame == null) {
+            contentFrame = new JFrame("Library Management System");
+        }
 
-        // Main Heading
         mainHeadingPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JLabel mainHeadingLabel = new JLabel("Welcome to library management system");
         mainHeadingLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 25));
         mainHeadingLabel.setHorizontalAlignment(SwingConstants.CENTER);
         mainHeadingPanel.add(mainHeadingLabel);
         contentFrame.add(mainHeadingPanel, BorderLayout.NORTH);
-
-        library = new Library();
-        if (!library.loadFile()) {
-            JLabel errorMessageLabel = new JLabel("Unable to read data");
-            errorMessageLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
-            errorMessageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            contentFrame.add(errorMessageLabel, BorderLayout.CENTER);
-        } else {
-            // Displaying all the items
-            tablePanel = new JPanel(new BorderLayout());
-            JPanel tableHeadingPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            JLabel tableHeadingLabel = new JLabel("Available Items");
-            tableHeadingLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
-            tableHeadingLabel.setHorizontalAlignment(SwingConstants.LEFT);
-            tableHeadingPanel.add(tableHeadingLabel);
-            tablePanel.add(tableHeadingPanel, BorderLayout.NORTH);
-            displayItemsInTable(tablePanel, mainHeadingPanel);
-
-            // adding buttons
-            JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            JButton addButton = new JButton("Add Item");
-            JButton editButton = new JButton("Edit Item");
-            JButton deleteButton = new JButton("Delete Item");
-            JButton viewpopularityButton = new JButton("View Popularity");
-            buttonsPanel.add(addButton);
-            buttonsPanel.add(editButton);
-            buttonsPanel.add(deleteButton);
-            buttonsPanel.add(viewpopularityButton);
-            contentFrame.add(buttonsPanel, BorderLayout.SOUTH);
-            ButtonEventHandler actionHandler = new ButtonEventHandler(library, this);
-            addButton.addActionListener(actionHandler);
-            editButton.addActionListener(actionHandler);
-            deleteButton.addActionListener(actionHandler);
-            viewpopularityButton.addActionListener(actionHandler);
+        if (check == false) {
+            library = new Library();
+            check = true;
+            if (!library.loadFile()) {
+                JLabel errorMessageLabel = new JLabel("Unable to read data");
+                errorMessageLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
+                errorMessageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                contentFrame.add(errorMessageLabel, BorderLayout.CENTER);
+            }
         }
+        // Displaying all the items
+        tablePanel = new JPanel(new BorderLayout());
+        JPanel tableHeadingPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel tableHeadingLabel = new JLabel("Available Items");
+        tableHeadingLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
+        tableHeadingLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        tableHeadingPanel.add(tableHeadingLabel);
+        tablePanel.add(tableHeadingPanel, BorderLayout.NORTH);
+        displayItemsInTable(tablePanel, mainHeadingPanel);
+
+        // adding buttons
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton addButton = new JButton("Add Item");
+        JButton editButton = new JButton("Edit Item");
+        JButton deleteButton = new JButton("Delete Item");
+        JButton viewpopularityButton = new JButton("View Popularity");
+        buttonsPanel.add(addButton);
+        buttonsPanel.add(editButton);
+        buttonsPanel.add(deleteButton);
+        buttonsPanel.add(viewpopularityButton);
+        contentFrame.add(buttonsPanel, BorderLayout.SOUTH);
+        ButtonEventHandler actionHandler = new ButtonEventHandler(library, this);
+        addButton.addActionListener(actionHandler);
+        editButton.addActionListener(actionHandler);
+        deleteButton.addActionListener(actionHandler);
+        viewpopularityButton.addActionListener(actionHandler);
 
         contentFrame.setResizable(true);
         contentFrame.setSize(700, 500);
         contentFrame.setVisible(true);
     }
 
-    private void displayItemsInTable(JPanel tablePanel, JPanel mainHeadingPanel) {
+    public void displayOutsideclass() {
+        contentFrame.getContentPane().removeAll();
+        displayFrame();
+    }
+
+    public void displayItemsInTable(JPanel tablePanel, JPanel mainHeadingPanel) {
         ArrayList<Item> itemList = library.getItemsList();
         if (itemList == null || itemList.isEmpty()) {
             JLabel noItemsLabel = new JLabel("No Items available in the library");
@@ -140,9 +151,20 @@ public class Q1 extends JFrame {
         tableModel.addColumn("Cost");
         tableModel.addColumn("Read");
 
-        JTable availableItemsTable = new JTable(tableModel);
+        if (availableItemsTable != null) {
+            contentFrame.getContentPane().remove(availableItemsTable);
+            contentFrame.revalidate();
+            contentFrame.repaint();
+        }
+        availableItemsTable = new JTable(tableModel);
         availableItemsTable.getTableHeader().setReorderingAllowed(false);
-        tablePanel.add(new JScrollPane(availableItemsTable), BorderLayout.CENTER);
+        if (pane != null) {
+            contentFrame.remove(pane);
+            contentFrame.revalidate();
+            contentFrame.repaint();
+        }
+        pane = new JScrollPane(availableItemsTable);
+        tablePanel.add(pane, BorderLayout.CENTER);
         contentFrame.add(tablePanel, BorderLayout.CENTER);
 
         availableItemsTable.addMouseMotionListener(new MouseMotionAdapter() {
@@ -174,7 +196,7 @@ public class Q1 extends JFrame {
                 int row = availableItemsTable.rowAtPoint(e.getPoint());
                 int column = availableItemsTable.columnAtPoint(e.getPoint());
 
-                if (row >= 0 && column >= 0) {
+                if (row >= 0 && column >= 7) {
                     System.out.println("Clicked on Row: " + row + ", Column: " + column);
                     System.out.println("Button clicked!");
 
@@ -220,16 +242,17 @@ public class Q1 extends JFrame {
                 System.out.println("Button clicked!");
             }
         };
+        print_values_in_the_table(itemList, availableItemsTable, tableModel);
+        contentFrame.revalidate();
+        contentFrame.repaint();
+    }
 
-        int count = 0;
+    void print_values_in_the_table(ArrayList<Item> itemList, JTable availableItemsTable, DefaultTableModel tableModel) {
 
         for (Item item : itemList) {
-            count++;
+            JButton button = new JButton();
             if (item instanceof Book) {
                 Book book = (Book) item;
-
-                JButton button = new JButton(String.valueOf(count));
-                button.addActionListener(customActionListener);
                 Object[] row = new Object[] {
                         book.getID(),
                         book.getTitle(),
@@ -240,11 +263,11 @@ public class Q1 extends JFrame {
                         book.getCost(),
                         button
                 };
+
                 ButtonRenderer buttonRenderer = new ButtonRenderer(button);
                 int lastColumn = availableItemsTable.getColumnCount() - 1;
                 TableColumn column = availableItemsTable.getColumnModel().getColumn(lastColumn);
                 column.setCellRenderer(buttonRenderer);
-                button.addActionListener(customActionListener);
                 tableModel.addRow(row);
 
             } else if (item instanceof Magazine) {
@@ -257,6 +280,7 @@ public class Q1 extends JFrame {
                         "-",
                         magazine.getPopularityCount(),
                         magazine.getCost(),
+                        button
                 });
 
             } else if (item instanceof NewsPaper) {
@@ -269,6 +293,7 @@ public class Q1 extends JFrame {
                         newspaper.getDate(),
                         newspaper.getPopularityCount(),
                         newspaper.getCost(),
+                        button
                 });
             }
         }
@@ -313,8 +338,9 @@ abstract class Item implements Configuration {
             System.out.println("Unable to create item");
             return;
         }
-        nextId++;
         id = nextId;
+        nextId++;
+        System.out.println("ITEM ID: " + id + " NEXT ID: " + nextId);
     }
 
     protected boolean verifyTitle(String title) {
@@ -376,6 +402,10 @@ abstract class Item implements Configuration {
 
     public void increasePopularityCount() {
         popularityCount++;
+    }
+
+    public void deleteItem() {
+        nextId--;
     }
 }
 
@@ -477,6 +507,7 @@ class Library {
                         System.out.println("Invalid item type");
                     }
                 }
+
             }
             myReader.close();
         } catch (FileNotFoundException e) {
@@ -499,6 +530,7 @@ class Library {
         for (Item items : itemList) {
             if (ID == items.getID()) {
                 itemList.remove(items);
+                items.deleteItem();
                 System.out.println("The Item has been deleted");
                 return true;
             }
@@ -569,7 +601,7 @@ class Library {
             }
 
             writer.close();
-            System.out.println("Data saved to data.txt.");
+            System.out.println("\nData saved to data.txt.");
             return true;
         } catch (IOException e) {
             System.out.println("An error occurred while saving data.");
@@ -586,7 +618,7 @@ class Library {
             for (Item item : itemList) {
                 writer.write(item.getTitle() + "," + item.getPopularityCount() + "\n");
             }
-            System.out.println("Data exported to " + filepath);
+            System.out.println("\nData exported to " + filepath);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -599,7 +631,6 @@ class Book extends Item {
 
     public Book(String t, String a, int y, int pop, int cos, String content) {
         super(content);
-        id = nextId++;
         setTitle(t);
         setAuthor(a);
         setYear(y);
@@ -947,6 +978,7 @@ class AddItemGUI extends JFrame {
 
                 library.save();
                 dispose();
+                mainFrame.displayOutsideclass();
             }
         });
     }
@@ -1021,10 +1053,12 @@ class DeleteItemGUI extends JFrame {
                 Item item = library.getItemByID(ID);
                 if (item == null) {
                     showErrorMessage("ID not Found!");
+                } else {
+                    library.deleteItem(ID);
+                    library.save();
                 }
-                library.deleteItem(ID);
-                library.save();
                 dispose();
+                mainFrame.displayOutsideclass();
             }
 
         });
@@ -1225,6 +1259,8 @@ class EditItemGUI extends JFrame {
 
                     library.save();
                     dispose();
+                    mainFrame.displayOutsideclass();
+
                 } catch (NumberFormatException ex) {
                     showErrorMessage("Invalid input format. Please check your inputs.");
                 }
@@ -1246,24 +1282,6 @@ class EditItemGUI extends JFrame {
     private void showErrorMessage(String message) {
         JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
-}
-
-class ViewPopularityGUI extends JFrame {
-    private Library library;
-    private Q1 mainFrame;
-    private Item item;
-
-    public ViewPopularityGUI(Library library, Q1 mainFrame) {
-        this.library = library;
-        this.mainFrame = mainFrame;
-
-        setTitle("Edit Item");
-        setSize(400, 300);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(new BorderLayout());
-
-    }
-
 }
 
 class ButtonEventHandler implements ActionListener {
